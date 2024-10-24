@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Map<String, dynamic>>> fetchMatchData() async {
-  const url = 'https://api.football-data.org/v4/competitions/PL/matches';
+  const url = 'https://api.football-data.org/v4/competitions/CL/matches';
   const headers = {
     'X-Auth-Token': '998b16130d4c49dd93253380d7284154',
   };

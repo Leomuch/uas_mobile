@@ -5,13 +5,14 @@ import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/util/font.dart';
 
-List<Widget> get widgetOptions {
+List<Widget> widgetOptions(BuildContext context, Function(void Function()) setState) {
   return [
     ListView.builder(
       itemCount: matchData.length,
       itemBuilder: (context, index) {
         final match = matchData[index];
         return buildScoreCard(
+          context,
           match['homeTeam'],
           match['awayTeam'],
           match['scoreA'],
@@ -21,6 +22,19 @@ List<Widget> get widgetOptions {
           match['matchday'],
           match['homeCrest'],
           match['awayCrest'],
+          (action) {
+            // Handle aksi ketika dihapus atau disenyapkan
+            if (action == 'delete') {
+              // Hapus pertandingan dari data
+              setState(() {
+                matchData.removeAt(index);
+              });
+            } else if (action == 'mute') {
+              // Lakukan aksi senyapkan (misalnya menandai pertandingan sebagai "muted")
+              print(
+                  'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
+            }
+          },
         );
       },
     ),
