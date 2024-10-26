@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sofa_score/models/data.dart';
+// import 'package:sofa_score/models/data.dart';
 // import 'package:sofa_score/util/font.dart';
 
 Widget buildScoreCard(
@@ -18,8 +18,6 @@ Widget buildScoreCard(
 ) {
   DateTime dateTime = DateTime.parse(utcDate);
   String formattedDate = DateFormat('HH:mm').format(dateTime);
-
-  print(matchData);
 
   return Dismissible(
     key: UniqueKey(),

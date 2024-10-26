@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     if (kDebugMode) {
       print('pausing...');
     }
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     if (kDebugMode) {
       print('pausing');
     }
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const LandingPage(),
         '/second': (context) => const Auth(),
-        '/homePage': (context) => const HomePage(),
+        '/home_page': (context) => const HomePage(),
       },
     );
   }

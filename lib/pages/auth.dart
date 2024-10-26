@@ -134,11 +134,7 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                      );
+                      Navigator.pushReplacementNamed(context, '/home_page');
                     },
                     child: const Text('Login'),
                   ),
@@ -246,11 +242,7 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                      );
+                      Navigator.pushReplacementNamed(context, '/home_page');
                     },
                     child: const Text('Register'),
                   ),

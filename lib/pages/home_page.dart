@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
   int _selectedIndex = 0;
   bool isLoading = true;
 
@@ -20,6 +21,26 @@ class _HomePageState extends State<HomePage> {
     loadMatchData();
   }
 
+  void scrollToUpcomingMatch() {
+    Future.delayed(const Duration(milliseconds: 10), () {
+      final index = matchData.indexWhere((match) => match['status'] == 'TIMED');
+      if (index != -1) {
+        final position = index * 70.0;
+        _scrollController.animateTo(
+          position,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> loadMatchData() async {
     // Panggil fungsi fetchMatchData dari file pembantu
     List<Map<String, dynamic>> fetchedMatches = await fetchMatchData();
@@ -27,6 +48,8 @@ class _HomePageState extends State<HomePage> {
       matchData = fetchedMatches;
       isLoading = false;
     });
+    // Panggil fungsi scroll setelah data dimuat
+    scrollToUpcomingMatch();
     print(newsData);
   }
 
@@ -41,10 +64,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sofa Score'),
+        automaticallyImplyLeading: false,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : widgetOptions(context, setState)[_selectedIndex],
+          : widgetOptions(context, setState, _scrollController)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

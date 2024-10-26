@@ -5,9 +5,10 @@ import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/util/font.dart';
 
-List<Widget> widgetOptions(BuildContext context, Function(void Function()) setState) {
+List<Widget> widgetOptions(BuildContext context, Function(void Function()) setState, ScrollController scrollController) {
   return [
     ListView.builder(
+      controller: scrollController,
       itemCount: matchData.length,
       itemBuilder: (context, index) {
         final match = matchData[index];
