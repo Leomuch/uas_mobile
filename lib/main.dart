@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:sofa_score/pages/auth.dart';
 import 'package:sofa_score/pages/home_page.dart';
 import 'package:sofa_score/pages/landing_page.dart';
+import 'package:sofa_score/pages/match_detail.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +46,7 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => const LandingPage(),
         '/second': (context) => const Auth(),
         '/home_page': (context) => const HomePage(),
+        '/match_detail': (context) => const MatchDetailPage(),
       },
     );
   }
