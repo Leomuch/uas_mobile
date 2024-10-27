@@ -14,6 +14,8 @@ Widget buildScoreCard(
   int matchday,
   String homeCrest,
   String awayCrest,
+  String area,
+  String competition,
   Function onDismiss,
 ) {
   DateTime dateTime = DateTime.parse(utcDate);
@@ -32,6 +34,10 @@ Widget buildScoreCard(
           'utcDate': utcDate,
           'status': status,
           'matchday': matchday,
+          'area': area,
+          'competition': competition,
+          'homeCrest': homeCrest,
+          'awayCrest': awayCrest,
         },
       );
     },

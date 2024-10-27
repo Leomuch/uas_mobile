@@ -28,6 +28,8 @@ Future<List<Map<String, dynamic>>> fetchMatchData() async {
           'stage': match['stage'],
           'homeCrest': match['homeTeam']['crest'],
           'awayCrest': match['awayTeam']['crest'],
+          'area': match['area']['name'],
+          'competition': match['competition']['name'],
         });
       }
 

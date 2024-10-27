@@ -23,6 +23,8 @@ List<Widget> widgetOptions(BuildContext context, Function(void Function()) setSt
           match['matchday'],
           match['homeCrest'],
           match['awayCrest'],
+          match['area'],
+          match['competition'],
           (action) {
             // Handle aksi ketika dihapus atau disenyapkan
             if (action == 'delete') {
