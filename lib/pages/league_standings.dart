@@ -30,11 +30,23 @@ class LeagueStandings extends StatelessWidget {
               itemBuilder: (context, index) {
                 final team = standings[index];
                 return ListTile(
-                  leading: Text('${index + 1}'),
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${index + 1}'),
+                      const SizedBox(width: 15),
+                      Image.network(
+                        team['crestUrl'],
+                        width: 25,
+                        height: 25,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.error),
+                      ),
+                    ],
+                  ),
                   title: Text(team['teamName']),
-                  subtitle: Text('Points: ${team['points']}'),
                   trailing: Text(
-                      'W: ${team['wins']} D: ${team['draws']} L: ${team['losses']}'),
+                      'Points: ${team['points']} W: ${team['wins']} D: ${team['draws']} L: ${team['losses']}'),
                 );
               },
             );
