@@ -42,7 +42,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadMatchData() async {
-    // Panggil fungsi fetchMatchData dari file pembantu
     List<Map<String, dynamic>> fetchedMatches = await fetchMatchData();
     setState(() {
       matchData = fetchedMatches;
@@ -50,7 +49,6 @@ class _HomePageState extends State<HomePage> {
     });
     // Panggil fungsi scroll setelah data dimuat
     scrollToUpcomingMatch();
-    print(newsData);
   }
 
   void _onItemTapped(int index) {

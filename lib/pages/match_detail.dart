@@ -31,13 +31,11 @@ class MatchDetailPage extends StatelessWidget {
                   'competition': competition,
                 });
               },
-              child: Expanded(
-                child: Text(
-                  '$area,  $competition, Ronde $matchday',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                  ),
+              child: Text(
+                '$area,  $competition, Ronde $matchday',
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -88,7 +86,7 @@ class MatchDetailPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20), // Add some spacing below crests
+            const SizedBox(height: 20),
             // Other match details
             Text('Tanggal: $utcDate'),
             Text('Status: $status'),

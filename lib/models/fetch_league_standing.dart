@@ -9,12 +9,15 @@ Future<List<Map<String, dynamic>>> fetchLeagueStandings() async {
     'X-Auth-Token': '998b16130d4c49dd93253380d7284154',
   };
 
+  leagueData.clear();
+
   try {
     final response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
       List standing = data['standings'][0]['table'] ?? [];
+      print("Received standings count: ${standing.length}");
 
       for (var team in standing) {
         leagueData.add({
@@ -25,7 +28,10 @@ Future<List<Map<String, dynamic>>> fetchLeagueStandings() async {
           'wins': team['won'],
           'draws': team['draw'],
           'losses': team['lost'],
+          'goalsFor': team['goalsFor'],
+          'goalsAgainst': team['goalsAgainst'],
           'goalDifference': team['goalDifference'],
+          'form': team['form'],
           'crestUrl': team['team']['crest'],
         });
       }

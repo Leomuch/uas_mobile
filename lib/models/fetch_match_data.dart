@@ -9,6 +9,8 @@ Future<List<Map<String, dynamic>>> fetchMatchData() async {
     'X-Auth-Token': '998b16130d4c49dd93253380d7284154',
   };
 
+  matchData.clear();
+
   try {
     final response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == 200) {
