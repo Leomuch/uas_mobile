@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:sofa_score/pages/auth.dart';
 import 'package:sofa_score/pages/home_page.dart';
 import 'package:sofa_score/pages/landing_page.dart';
+import 'package:sofa_score/pages/league_standings.dart';
 import 'package:sofa_score/pages/match_detail.dart';
 
 void main() {
@@ -47,6 +48,7 @@ class _MyAppState extends State<MyApp> {
         '/second': (context) => const Auth(),
         '/home_page': (context) => const HomePage(),
         '/match_detail': (context) => const MatchDetailPage(),
+        '/league_standing': (context) => const LeagueStandings(),
       },
     );
   }

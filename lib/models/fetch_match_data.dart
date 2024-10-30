@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:sofa_score/models/data.dart';
 
 Future<List<Map<String, dynamic>>> fetchMatchData() async {
   const url = 'https://api.football-data.org/v4/competitions/PD/matches';
@@ -14,7 +15,6 @@ Future<List<Map<String, dynamic>>> fetchMatchData() async {
       final data = jsonDecode(response.body);
 
       List fetchedMatches = data['matches'] ?? [];
-      List<Map<String, dynamic>> matchData = [];
 
       for (var match in fetchedMatches) {
         matchData.add({

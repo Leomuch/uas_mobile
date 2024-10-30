@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sofa_score/controller/controller_bottom_navbar.dart';
 import 'package:sofa_score/models/data.dart';
-import 'package:sofa_score/models/api_helper.dart';
+import 'package:sofa_score/models/fetch_match_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -56,6 +56,9 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (_selectedIndex == 0) {
+        scrollToUpcomingMatch();
+      }
     });
   }
 

@@ -24,12 +24,20 @@ class MatchDetailPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 50),
-            Expanded(
-              child: Text(
-                '$area,  $competition, Ronde $matchday',
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.black,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/league_standing', arguments: {
+                  'area': area,
+                  'competition': competition,
+                });
+              },
+              child: Expanded(
+                child: Text(
+                  '$area,  $competition, Ronde $matchday',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
