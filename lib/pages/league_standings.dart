@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/models/fetch_league_standing.dart';
@@ -22,15 +23,16 @@ class _LeagueStandingsState extends State<LeagueStandings> {
     try {
       final List<Map<String, dynamic>> standings = await fetchLeagueStandings();
       setState(() {
-        leagueData =
-            standings; // Simpan data yang diambil ke variabel leagueData
-        isLoading = false; // Set loading ke false setelah data dimuat
+        leagueData = standings;
+        isLoading = false;
       });
     } catch (e) {
       setState(() {
-        isLoading = false; // Set loading ke false jika terjadi error
+        isLoading = false;
       });
-      print('Error fetching standings: $e');
+      if (kDebugMode) {
+        print('Error fetching standings: $e');
+      }
     }
   }
 
@@ -43,6 +45,21 @@ class _LeagueStandingsState extends State<LeagueStandings> {
     return Scaffold(
       appBar: AppBar(
         title: Text('$competition Standings - $area'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.score),
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/top_score',
+                arguments: {
+                  'area': area,
+                  'competition': competition,
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

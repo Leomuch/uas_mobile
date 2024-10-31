@@ -1,5 +1,6 @@
 List<Map<String, dynamic>> matchData = [];
 List<Map<String, dynamic>> leagueData = [];
+List<Map<String, dynamic>> topScoreData = [];
 List<Map<String, dynamic>> newsData = [
   {
     'jurnalis': 'Daily Star',

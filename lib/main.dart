@@ -6,6 +6,7 @@ import 'package:sofa_score/pages/home_page.dart';
 import 'package:sofa_score/pages/landing_page.dart';
 import 'package:sofa_score/pages/league_standings.dart';
 import 'package:sofa_score/pages/match_detail.dart';
+import 'package:sofa_score/pages/top_score.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class _MyAppState extends State<MyApp> {
         '/home_page': (context) => const HomePage(),
         '/match_detail': (context) => const MatchDetailPage(),
         '/league_standing': (context) => const LeagueStandings(),
+        '/top_score': (context) => const TopScore(),
       },
     );
   }
