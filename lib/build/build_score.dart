@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:sofa_score/models/data.dart';
-// import 'package:sofa_score/util/font.dart';
 
 Widget buildScoreCard(
   BuildContext context,
+  int matchId,
   String homeTeam,
   String awayTeam,
   int scoreA,
   int scoreB,
   String utcDate,
   String status,
-  int matchday,
   String homeCrest,
   String awayCrest,
-  String area,
-  String competition,
   Function onDismiss,
 ) {
   DateTime dateTime = DateTime.parse(utcDate);
@@ -26,19 +22,7 @@ Widget buildScoreCard(
       Navigator.pushNamed(
         context,
         '/match_detail',
-        arguments: {
-          'homeTeam': homeTeam,
-          'awayTeam': awayTeam,
-          'scoreA': scoreA,
-          'scoreB': scoreB,
-          'utcDate': utcDate,
-          'status': status,
-          'matchday': matchday,
-          'area': area,
-          'competition': competition,
-          'homeCrest': homeCrest,
-          'awayCrest': awayCrest,
-        },
+        arguments: {'id': matchId}, // Ambil ID dari data match
       );
     },
     child: Dismissible(

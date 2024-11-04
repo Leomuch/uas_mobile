@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/build/build_favorite.dart';
 import 'package:sofa_score/build/build_news.dart';
@@ -5,7 +6,8 @@ import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/util/font.dart';
 
-List<Widget> widgetOptions(BuildContext context, Function(void Function()) setState, ScrollController scrollController) {
+List<Widget> widgetOptions(BuildContext context,
+    Function(void Function()) setState, ScrollController scrollController) {
   return [
     ListView.builder(
       controller: scrollController,
@@ -14,17 +16,15 @@ List<Widget> widgetOptions(BuildContext context, Function(void Function()) setSt
         final match = matchData[index];
         return buildScoreCard(
           context,
+          match['id'],
           match['homeTeam'],
           match['awayTeam'],
           match['scoreA'],
           match['scoreB'],
           match['utcDate'],
           match['status'],
-          match['matchday'],
           match['homeCrest'],
           match['awayCrest'],
-          match['area'],
-          match['competition'],
           (action) {
             // Handle aksi ketika dihapus atau disenyapkan
             if (action == 'delete') {
@@ -34,8 +34,10 @@ List<Widget> widgetOptions(BuildContext context, Function(void Function()) setSt
               });
             } else if (action == 'mute') {
               // Lakukan aksi senyapkan (misalnya menandai pertandingan sebagai "muted")
-              print(
-                  'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
+              if (kDebugMode) {
+                print(
+                    'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
+              }
             }
           },
         );

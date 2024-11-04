@@ -17,7 +17,9 @@ Future<List<Map<String, dynamic>>> fetchLeagueStandings() async {
       final data = jsonDecode(response.body);
 
       List standing = data['standings'][0]['table'] ?? [];
-      print("Received standings count: ${standing.length}");
+      if (kDebugMode) {
+        print("Received standings count: ${standing.length}");
+      }
 
       for (var team in standing) {
         leagueData.add({
