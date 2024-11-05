@@ -8,9 +8,6 @@ Widget buildGoalsInfo() {
 
   List goals = matchDetail[0]['goals'];
 
-  // Debugging untuk memastikan data gol ada
-  print('Goals: $goals');
-
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

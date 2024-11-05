@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/services/auth_services.dart';
 import 'package:sofa_score/util/custom_text_field.dart';
 import 'package:intl/intl.dart';
-import 'package:sofa_score/services/auth_services.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -22,13 +22,11 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
   TextEditingController passwordLogin = TextEditingController();
   TextEditingController passwordRegis = TextEditingController();
   TextEditingController tanggalLahir = TextEditingController();
-  TextEditingController emailPhoneLogin = TextEditingController();
-  TextEditingController emailPhoneRegis = TextEditingController();
+  TextEditingController emailLogin = TextEditingController();
+  TextEditingController emailRegis = TextEditingController();
   TextEditingController genderController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   late TabController _tabController;
-  bool _isObscured = true;
-  bool _showPassword = false;
   bool _agreedToTerms = false;
   bool _autoLogin = false;
   var gender = "";
@@ -72,32 +70,39 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
         // Setelah login berhasil, navigasi ke home_page
-        Navigator.pushReplacementNamed(
-          context,
-          '/home_page',
-        );
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home_page');
+        }
       } else {
-        print('Login canceled or failed');
+        if (kDebugMode) {
+          print('Login canceled or failed');
+        }
       }
     } catch (e) {
       // Tangani error jika login gagal
-      print('Error logging in with Google: $e');
+      if (kDebugMode) {
+        print('Error logging in with Google: $e');
+      }
     }
   }
 
   Future<void> _login() async {
     try {
-      print('Email: ${emailPhoneLogin.text.trim()}');
-      print('Password: ${passwordLogin.text.trim()}');
-
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailPhoneLogin.text.trim(),
+      if (kDebugMode) {
+        print('Email: ${emailLogin.text.trim()}');
+      }
+      if (kDebugMode) {
+        print('Password: ${passwordLogin.text.trim()}');
+      }
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailLogin.text.trim(),
         password: passwordLogin.text.trim(),
       );
 
       // Navigate to home page after successful login
-      Navigator.pushReplacementNamed(context, '/home_page');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home_page');
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Login failed. Please try again.';
       if (e.code == 'user-not-found') {
@@ -106,21 +111,24 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
         errorMessage = 'Wrong password provided for that user.';
       }
       // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
 
   Future<void> _register() async {
     if (_formKeyRegister.currentState?.validate() ?? false) {
       try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailPhoneRegis.text.trim(),
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailRegis.text.trim(),
           password: passwordRegis.text.trim(),
         );
-        Navigator.pushReplacementNamed(context, '/home_page');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home_page');
+        }
       } on FirebaseAuthException catch (e) {
         _showErrorMessage(e.message);
       } on SocketException {
@@ -188,12 +196,12 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                 children: [
                   const SizedBox(height: 6),
                   CustomTextField(
-                    controller: emailPhoneLogin,
-                    label: "Email Or Phone",
-                    hint: "Enter Email Or Phone",
+                    controller: emailLogin,
+                    label: "Email",
+                    hint: "Enter Your Email",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter email or phone';
+                        return 'Please enter your email';
                       }
                       return null;
                     },
@@ -262,12 +270,12 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                   ),
                   const SizedBox(height: 20),
                   CustomTextField(
-                    controller: emailPhoneRegis,
-                    label: "Email Or Phone",
-                    hint: "Enter Email Or Phone",
+                    controller: emailRegis,
+                    label: "Email",
+                    hint: "Enter Your Email",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter password';
+                        return 'Please enter email';
                       }
                       return null;
                     },
@@ -281,7 +289,7 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                     readOnly: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter password';
+                        return 'Please select your birthdate';
                       }
                       return null;
                     },

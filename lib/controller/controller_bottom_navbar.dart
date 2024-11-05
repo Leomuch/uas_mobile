@@ -5,25 +5,12 @@ import 'package:sofa_score/build/build_news.dart';
 import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/util/font.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-List<Widget> widgetOptions(BuildContext context,
-    Function(void Function()) setState, ScrollController scrollController) {
-  // Fungsi untuk logout
-  Future<void> _logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      // Arahkan kembali ke halaman login setelah logout
-      Navigator.pushReplacementNamed(
-          context, '/second'); // Sesuaikan dengan nama rute login Anda
-    } catch (e) {
-      // Tampilkan pesan kesalahan jika logout gagal
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logout gagal: $e')),
-      );
-    }
-  }
-
+List<Widget> widgetOptions(
+    BuildContext context,
+    Function(void Function()) setState,
+    ScrollController scrollController,
+    Future<void> Function() logout) {
   return [
     ListView.builder(
       controller: scrollController,
@@ -102,7 +89,7 @@ List<Widget> widgetOptions(BuildContext context,
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: _logout,
+            onPressed: () => logout(),
             child: const Text('Logout'),
           ),
         ],

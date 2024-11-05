@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/controller/controller_bottom_navbar.dart';
 import 'package:sofa_score/models/data.dart';
@@ -60,6 +61,21 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/second');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Logout gagal: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +85,8 @@ class _HomePageState extends State<HomePage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : widgetOptions(context, setState, _scrollController)[_selectedIndex],
+          : widgetOptions(
+              context, setState, _scrollController, logout)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
