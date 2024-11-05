@@ -5,9 +5,25 @@ import 'package:sofa_score/build/build_news.dart';
 import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/util/font.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 List<Widget> widgetOptions(BuildContext context,
     Function(void Function()) setState, ScrollController scrollController) {
+  // Fungsi untuk logout
+  Future<void> _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // Arahkan kembali ke halaman login setelah logout
+      Navigator.pushReplacementNamed(
+          context, '/second'); // Sesuaikan dengan nama rute login Anda
+    } catch (e) {
+      // Tampilkan pesan kesalahan jika logout gagal
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Logout gagal: $e')),
+      );
+    }
+  }
+
   return [
     ListView.builder(
       controller: scrollController,
@@ -26,14 +42,11 @@ List<Widget> widgetOptions(BuildContext context,
           match['homeCrest'],
           match['awayCrest'],
           (action) {
-            // Handle aksi ketika dihapus atau disenyapkan
             if (action == 'delete') {
-              // Hapus pertandingan dari data
               setState(() {
                 matchData.removeAt(index);
               });
             } else if (action == 'mute') {
-              // Lakukan aksi senyapkan (misalnya menandai pertandingan sebagai "muted")
               if (kDebugMode) {
                 print(
                     'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
@@ -86,6 +99,11 @@ List<Widget> widgetOptions(BuildContext context,
           Text(
             'Email: your_email@example.com',
             style: styleKu2,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _logout,
+            child: const Text('Logout'),
           ),
         ],
       ),

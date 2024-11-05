@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -8,8 +10,9 @@ import 'package:sofa_score/pages/league_standings.dart';
 import 'package:sofa_score/pages/match_detail.dart';
 import 'package:sofa_score/pages/top_score.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
@@ -43,9 +46,19 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasData) {
+            return const HomePage();
+          } else {
+            return const LandingPage();
+          }
+        },
+      ),
       routes: {
-        '/': (context) => const LandingPage(),
         '/second': (context) => const Auth(),
         '/home_page': (context) => const HomePage(),
         '/match_detail': (context) => const MatchDetailPage(),

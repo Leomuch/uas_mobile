@@ -14,7 +14,7 @@ class CustomTextField extends StatefulWidget {
       this.onTap,
       this.readOnly = false,
       this.groupValue,
-      this.onChanged});
+      this.onChanged, required String? Function(dynamic value) validator});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();

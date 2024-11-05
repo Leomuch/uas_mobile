@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/util/custom_text_field.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +12,12 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
+  final GlobalKey<FormState> _formKeyLogin = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKeyRegister = GlobalKey<FormState>();
+
   TextEditingController username = TextEditingController();
-  TextEditingController password = TextEditingController();
+  TextEditingController passwordLogin = TextEditingController();
+  TextEditingController passwordRegis = TextEditingController();
   TextEditingController tanggalLahir = TextEditingController();
   TextEditingController emailPhoneLogin = TextEditingController();
   TextEditingController emailPhoneRegis = TextEditingController();
@@ -58,6 +64,58 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
     }
   }
 
+  Future<void> _login() async {
+    try {
+      print('Email: ${emailPhoneLogin.text.trim()}');
+      print('Password: ${passwordLogin.text.trim()}');
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailPhoneLogin.text.trim(),
+        password: passwordLogin.text.trim(),
+      );
+
+      // Navigate to home page after successful login
+      Navigator.pushReplacementNamed(context, '/home_page');
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Login failed. Please try again.';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+      }
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
+  }
+
+  Future<void> _register() async {
+    if (_formKeyRegister.currentState?.validate() ?? false) {
+      try {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailPhoneRegis.text.trim(),
+          password: passwordRegis.text.trim(),
+        );
+        Navigator.pushReplacementNamed(context, '/home_page');
+      } on FirebaseAuthException catch (e) {
+        _showErrorMessage(e.message);
+      } on SocketException {
+        _showErrorMessage('No Internet connection');
+      } catch (e) {
+        _showErrorMessage('An unexpected error occurred');
+      }
+    }
+  }
+
+  void _showErrorMessage(String? message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message ?? 'An error occurred')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,151 +160,160 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
           // sign in
           Padding(
             padding: const EdgeInsets.all(16),
-            child: ListView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                const SizedBox(height: 6),
-                CustomTextField(
-                  controller: emailPhoneLogin,
-                  label: "Email Or Phone",
-                  hint: "Enter Email Or Phone",
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  controller: password,
-                  label: "Password",
-                  hint: "Enter Password",
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  title: const Text('Remember Me'),
-                  trailing: Switch(
-                    value: _autoLogin,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _autoLogin = value;
-                      });
+            child: Form(
+              key: _formKeyLogin,
+              child: ListView(
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 6),
+                  CustomTextField(
+                    controller: emailPhoneLogin,
+                    label: "Email Or Phone",
+                    hint: "Enter Email Or Phone",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter email or phone';
+                      }
+                      return null;
                     },
                   ),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home_page');
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    controller: passwordLogin,
+                    label: "Password",
+                    hint: "Enter Password",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
                     },
-                    child: const Text('Login'),
                   ),
-                )
-              ],
+                  const SizedBox(height: 16),
+                  ListTile(
+                    title: const Text('Remember Me'),
+                    trailing: Switch(
+                      value: _autoLogin,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _autoLogin = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _login,
+                      child: const Text('Login'),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           // sign up
           Padding(
             padding: const EdgeInsets.all(16),
-            child: ListView(
-              // physics: const NeverScrollableScrollPhysics(),
-              children: [
-                const SizedBox(height: 6),
-                CustomTextField(
-                  controller: username,
-                  label: "Username",
-                  hint: "Enter Username",
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: emailPhoneRegis,
-                  label: "Email Or Phone",
-                  hint: "Enter Email Or Phone",
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  controller: _dateController,
-                  label: "Birth Date",
-                  hint: "Select Birth Date",
-                  onTap: () => _selectDate(context),
-                  readOnly: true,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: genderController,
-                  label: "Gender",
-                  hint: "Select Gender",
-                  groupValue: gender,
-                  onChanged: (value) {
-                    setState(() {
-                      gender = value!;
-                      genderController.text = gender;
-                    });
-                  },
-                  readOnly: true,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  obscureText: _isObscured,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
+            child: Form(
+              key: _formKeyRegister,
+              child: ListView(
+                // physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 6),
+                  CustomTextField(
+                    controller: username,
+                    label: "Username",
+                    hint: "Enter Username",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Checkbox(
-                    value: _showPassword,
-                    onChanged: (bool? value) {
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: emailPhoneRegis,
+                    label: "Email Or Phone",
+                    hint: "Enter Email Or Phone",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    controller: _dateController,
+                    label: "Birth Date",
+                    hint: "Select Birth Date",
+                    onTap: () => _selectDate(context),
+                    readOnly: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    controller: passwordRegis,
+                    label: "Password",
+                    hint: "Enter A Password",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const Text("Pilih Negara"),
+                  DropdownButtonFormField<String>(
+                    value: _country,
+                    items: <String>[
+                      'Indonesia',
+                      'Malaysia',
+                      'Singapore',
+                      'Thailand'
+                    ].map((String value) {
+                      return DropdownMenuItem<String>(
+                          value: value, child: Text(value));
+                    }).toList(),
+                    hint: const Text('Select Country'),
+                    onChanged: (String? newValue) {
                       setState(() {
-                        _showPassword = value ?? false;
-                        _isObscured = !_showPassword;
+                        _country = newValue;
                       });
                     },
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  title: const Text('Show Password'),
-                ),
-                const Text("Pilih Negara"),
-                DropdownButtonFormField<String>(
-                  value: _country,
-                  items: <String>[
-                    'Indonesia',
-                    'Malaysia',
-                    'Singapore',
-                    'Thailand'
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                        value: value, child: Text(value));
-                  }).toList(),
-                  hint: const Text('Select Country'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _country = newValue;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('I agree to the terms and conditions'),
+                    leading: Checkbox(
+                      value: _agreedToTerms,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _agreedToTerms = value ?? false;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('I agree to the terms and conditions'),
-                  leading: Checkbox(
-                    value: _agreedToTerms,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _agreedToTerms = value ?? false;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const SizedBox(height: 16),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home_page');
-                    },
-                    child: const Text('Register'),
-                  ),
-                )
-              ],
+                  const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _register,
+                      child: const Text('Register'),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ],
