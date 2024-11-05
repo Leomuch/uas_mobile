@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sofa_score/services/auth_services.dart';
 import 'package:sofa_score/util/custom_text_field.dart';
 import 'package:intl/intl.dart';
+import 'package:sofa_score/services/auth_services.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -14,6 +16,7 @@ class Auth extends StatefulWidget {
 class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKeyLogin = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKeyRegister = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
   TextEditingController username = TextEditingController();
   TextEditingController passwordLogin = TextEditingController();
@@ -61,6 +64,24 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
         _dateController.text =
             DateFormat('d MMMM, yyyy').format(_selectedDate!);
       });
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    try {
+      User? user = await _authService.signInWithGoogle();
+      if (user != null) {
+        // Setelah login berhasil, navigasi ke home_page
+        Navigator.pushReplacementNamed(
+          context,
+          '/home_page',
+        );
+      } else {
+        print('Login canceled or failed');
+      }
+    } catch (e) {
+      // Tangani error jika login gagal
+      print('Error logging in with Google: $e');
     }
   }
 
@@ -207,6 +228,13 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                       onPressed: _login,
                       child: const Text('Login'),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _loginWithGoogle, // login dengan Google
+                      child: const Text('Login with Google'),
+                    ),
                   )
                 ],
               ),
@@ -311,7 +339,13 @@ class _AuthState extends State<Auth> with SingleTickerProviderStateMixin {
                       onPressed: _register,
                       child: const Text('Register'),
                     ),
-                  )
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _loginWithGoogle, // Registrasi dengan Google
+                      child: const Text('Register with Google'),
+                    ),
+                  ),
                 ],
               ),
             ),
