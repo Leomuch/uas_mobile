@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:sofa_score/models/profil.dart';
 import 'package:sofa_score/pages/auth.dart';
 import 'package:sofa_score/pages/home_page.dart';
 import 'package:sofa_score/pages/landing_page.dart';
@@ -42,6 +43,15 @@ class _MyAppState extends State<MyApp> {
     FlutterNativeSplash.remove();
   }
 
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LandingPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,6 +71,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/second': (context) => const Auth(),
         '/home_page': (context) => const HomePage(),
+        '/profil': (context) => ProfilePage(logout: logout),
         '/match_detail': (context) => const MatchDetailPage(),
         '/league_standing': (context) => const LeagueStandings(),
         '/top_score': (context) => const TopScore(),

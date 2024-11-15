@@ -1,10 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sofa_score/build/build_favorite.dart';
 import 'package:sofa_score/build/build_news.dart';
 import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
-import 'package:sofa_score/util/font.dart';
 
 List<Widget> widgetOptions(
     BuildContext context,
@@ -54,46 +54,43 @@ List<Widget> widgetOptions(
         );
       },
     ),
-    ListView.builder(
-      itemCount: favData.length,
-      itemBuilder: (context, index) {
-        final fav = favData[index];
-        final avatars = fav['avatar'] ?? [];
-        return buildFavoriteCard(
-          fav['head'],
-          List<String>.from(avatars),
+    StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('favorites').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No favorite data available.'));
+        }
+
+        var favData = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: favData.length,
+          itemBuilder: (context, index) {
+            var favItem = favData[index];
+            var head = favItem['head'] ?? 'No Title';
+            List<String> avatars = List<String>.from(favItem['avatar'] ?? []);
+            return buildFavoriteCard(head: head, avatars: avatars);
+          },
         );
       },
     ),
-    // Profile Tab
-    Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const CircleAvatar(
-            radius: 60,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Your Profile',
-            style: styleKu1,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Username: your_username',
-            style: styleKu2,
-          ),
-          Text(
-            'Email: your_email@example.com',
-            style: styleKu2,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => logout(),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
+    Builder(
+      builder: (context) {
+        // Navigasi langsung ke halaman profil ketika tab profil dipilih
+        Future.microtask(() {
+          Navigator.pushNamed(context, '/profil');
+        });
+        return const Center(
+          child:
+              CircularProgressIndicator(), // Menampilkan loader sementara navigasi
+        );
+      },
     ),
   ];
 }
