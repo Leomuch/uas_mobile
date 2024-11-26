@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sofa_score/util/font.dart';
 
-// Mengubah fungsi agar menerima parameter 'head' dan 'avatars'
 Widget buildFavoriteCard({required String head, required List<String> avatars}) {
   return Card(
     elevation: 2,
