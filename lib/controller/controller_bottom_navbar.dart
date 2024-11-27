@@ -74,8 +74,7 @@ List<Widget> widgetOptions(
           itemBuilder: (context, index) {
             var favItem = favData[index];
             var head = favItem['head'] ?? 'No Title';
-            List<String> avatars = List<String>.from(favItem['avatar'] ?? []);
-            return buildFavoriteCard(head: head, avatars: avatars);
+            return buildFavoriteCard(head: head, context: context);
           },
         );
       },

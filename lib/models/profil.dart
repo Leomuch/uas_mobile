@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final Future<void> Function() logout;
 
   const ProfilePage({super.key, required this.logout});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,8 +41,8 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       user.displayName ?? 'Nama Pengguna',
-                      style:
-                          const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     Text(user.email ?? 'Email Pengguna'),
@@ -59,7 +64,8 @@ class ProfilePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ProfilePage(logout: logout)),
+                          builder: (context) =>
+                              ProfilePage(logout: widget.logout)),
                     );
                   },
                 ),
@@ -103,9 +109,36 @@ class ProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: logout,
+            onPressed: () async {
+              try {
+                // Pastikan widget masih terpasang sebelum melakukan logout
+                await widget.logout();
+
+                // Periksa jika widget masih terpasang
+                if (mounted) {
+                  // Menggunakan addPostFrameCallback untuk memastikan context aman
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    // Gunakan Navigator dengan rootNavigator: true untuk menavigasi ke halaman yang benar
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil(
+                      '/landing',
+                      (route) => false, // Hapus semua route sebelumnya
+                    );
+                  });
+                }
+              } catch (e) {
+                // Menampilkan SnackBar hanya jika widget masih terpasang
+                if (mounted) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Logout gagal: $e')),
+                    );
+                  });
+                }
+              }
+            },
             child: const Text('Logout'),
-          ),
+          )
         ],
       ),
     );
