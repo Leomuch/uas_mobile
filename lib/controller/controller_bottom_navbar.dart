@@ -5,6 +5,7 @@ import 'package:sofa_score/build/build_favorite.dart';
 import 'package:sofa_score/build/build_news.dart';
 import 'package:sofa_score/build/build_score.dart';
 import 'package:sofa_score/models/data.dart';
+import 'package:sofa_score/models/fetch_news.dart';
 
 List<Widget> widgetOptions(
     BuildContext context,
@@ -12,6 +13,7 @@ List<Widget> widgetOptions(
     ScrollController scrollController,
     Future<void> Function() logout) {
   return [
+    // Menampilkan daftar pertandingan
     ListView.builder(
       controller: scrollController,
       itemCount: matchData.length,
@@ -43,15 +45,32 @@ List<Widget> widgetOptions(
         );
       },
     ),
-    ListView.builder(
-      itemCount: newsData.length,
-      itemBuilder: (context, index) {
-        final news = newsData[index];
-        return buildNewsCard(
-          news['jurnalis'],
-          news['headline'],
-          news['dateline'],
-        );
+    // Menampilkan daftar berita sepak bola
+    FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchFootballNews(), // Mengambil data berita dari API
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          final newsData = snapshot.data!;
+          return ListView.builder(
+            itemCount: newsData.length,
+            itemBuilder: (context, index) {
+              final news = newsData[index];
+              return buildNewsCard(
+                news['source'] ?? 'Unknown Source',
+                news['title'] ?? 'No Title',
+                news['description'] ?? 'No Description',
+                news['imageUrl'],
+                news['url'],
+              );
+            },
+          );
+        } else {
+          return const Center(child: Text('No news available.'));
+        }
       },
     ),
     StreamBuilder<QuerySnapshot>(
@@ -79,6 +98,7 @@ List<Widget> widgetOptions(
         );
       },
     ),
+    // Menampilkan loading indicator sementara navigasi ke halaman profil
     Builder(
       builder: (context) {
         // Navigasi langsung ke halaman profil ketika tab profil dipilih
