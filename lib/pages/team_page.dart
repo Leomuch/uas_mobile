@@ -41,9 +41,11 @@ class _TeamPageState extends State<TeamPage> {
             }
           ],
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Team added to favorites!')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Team added to favorites!')),
+          );
+        }
       } else {
         final documentId = querySnapshot.docs.first.id;
         final existingTeams = querySnapshot.docs.first['teams'] as List;
@@ -66,9 +68,11 @@ class _TeamPageState extends State<TeamPage> {
               }
             ]),
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Team removed from favorites!')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Team removed from favorites!')),
+            );
+          }
         } else {
           await FirebaseFirestore.instance
               .collection('favorites')
@@ -82,9 +86,11 @@ class _TeamPageState extends State<TeamPage> {
               }
             ]),
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Team added to favorites!')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Team added to favorites!')),
+            );
+          }
         }
       }
 
@@ -93,9 +99,11 @@ class _TeamPageState extends State<TeamPage> {
         favorites = fetchFavorites(); // Refresh favorites list after update
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update team: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update team: $e')),
+        );
+      }
     }
   }
 

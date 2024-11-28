@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Map<String, dynamic>>> fetchFootballNews() async {
@@ -27,11 +28,15 @@ Future<List<Map<String, dynamic>>> fetchFootballNews() async {
 
       return newsData;
     } else {
-      print('Failed to load news: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Failed to load news: ${response.statusCode}');
+      }
       return [];
     }
   } catch (e) {
-    print('Error fetching football news: $e');
+    if (kDebugMode) {
+      print('Error fetching football news: $e');
+    }
     return [];
   }
 }

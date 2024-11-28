@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:sofa_score/util/font.dart';
+import '../util/font.dart';
 
 Widget buildNewsCard(String jurnalis, String headline, String dateline,
     String? imageUrl, String url) {
   return GestureDetector(
     onTap: () async {
       final Uri uri = Uri.parse(url);
-      print('URL to open: $uri');
 
       // Mencoba membuka URL jika bisa diluncurkan
       if (await canLaunchUrl(uri)) {

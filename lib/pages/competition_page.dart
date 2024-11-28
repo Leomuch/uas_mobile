@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofa_score/models/fetch_competition.dart';
-import 'package:sofa_score/models/fetch_favorite.dart';
+import '../models/fetch_competition.dart';
+import '../models/fetch_favorite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CompetitionPage extends StatefulWidget {
@@ -17,8 +18,8 @@ class _CompetitionPageState extends State<CompetitionPage> {
   @override
   void initState() {
     super.initState();
-    competitions = fetchCompetition(); // Fetch competitions
-    favorites = fetchFavorites(); // Fetch favorites once on init
+    competitions = fetchCompetition();
+    favorites = fetchFavorites();
   }
 
   // Fungsi untuk menambahkan kompetisi ke favorit
@@ -30,7 +31,9 @@ class _CompetitionPageState extends State<CompetitionPage> {
           .where('head', isEqualTo: 'competition')
           .get();
 
-      print('Query Snapshot: ${querySnapshot.docs.length} documents found.');
+      if (kDebugMode) {
+        print('Query Snapshot: ${querySnapshot.docs.length} documents found.');
+      }
       if (querySnapshot.docs.isEmpty) {
         // Jika tidak ada dokumen dengan 'head': 'competition', buat dokumen baru
         await FirebaseFirestore.instance.collection('favorites').add({
@@ -43,11 +46,15 @@ class _CompetitionPageState extends State<CompetitionPage> {
             }
           ],
         });
-        print(
-            'Added competition to favorites: ${competition['competitionName']}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Competition added to favorites!')),
-        );
+        if (kDebugMode) {
+          print(
+              'Added competition to favorites: ${competition['competitionName']}');
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Competition added to favorites!')),
+          );
+        }
       } else {
         final documentId = querySnapshot.docs.first.id;
         final existingCompetitions =
@@ -73,12 +80,12 @@ class _CompetitionPageState extends State<CompetitionPage> {
               }
             ]),
           });
-          print(
-              'Removed competition from favorites: ${competition['competitionName']}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Competition removed from favorites!')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Competition removed from favorites!')),
+            );
+          }
         } else {
           await FirebaseFirestore.instance
               .collection('favorites')
@@ -92,11 +99,11 @@ class _CompetitionPageState extends State<CompetitionPage> {
               }
             ]),
           });
-          print(
-              'Added competition to favorites: ${competition['competitionName']}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Competition added to favorites!')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Competition added to favorites!')),
+            );
+          }
         }
       }
 
@@ -105,10 +112,14 @@ class _CompetitionPageState extends State<CompetitionPage> {
         favorites = fetchFavorites(); // Refresh favorites list after update
       });
     } catch (e) {
-      print('Error adding competition to favorites: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update competition: $e')),
-      );
+      if (kDebugMode) {
+        print('Error adding competition to favorites: $e');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update competition: $e')),
+        );
+      }
     }
   }
 
@@ -126,14 +137,8 @@ class _CompetitionPageState extends State<CompetitionPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final competitionsList =
-                snapshot.data![0]; // First element is the competitions list
-            final favoriteCompetitions =
-                snapshot.data![1]; // Second element is the favorites list
-
-            print('Competitions loaded: ${competitionsList.length}');
-            print('Favorites loaded: ${favoriteCompetitions.length}');
-
+            final competitionsList = snapshot.data![0];
+            final favoriteCompetitions = snapshot.data![1];
             return ListView.builder(
               itemCount: competitionsList.length,
               itemBuilder: (context, index) {
@@ -144,8 +149,10 @@ class _CompetitionPageState extends State<CompetitionPage> {
                       competition['competitionName'],
                 );
 
-                print(
+                if (kDebugMode) {
+                  print(
                     'Competition: ${competition['competitionName']}, IsFavorite: $isFavorite');
+                }
 
                 return ListTile(
                   title: Text(competition['competitionName']),
