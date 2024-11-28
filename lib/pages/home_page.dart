@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sofa_score/controller/controller_bottom_navbar.dart';
-import 'package:sofa_score/models/data.dart';
-import 'package:sofa_score/models/fetch_match_data.dart';
+import '../controller/controller_bottom_navbar.dart';
+import '../models/data.dart';
+import '../models/fetch_match_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -76,6 +76,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void navigateToProfile() {
+    if (mounted) {
+      Navigator.pushNamed(context, '/profil');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : widgetOptions(
-              context, setState, _scrollController, logout)[_selectedIndex],
+              context, setState, _scrollController, logout, navigateToProfile)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

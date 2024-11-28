@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofa_score/build/build_favorite.dart';
-import 'package:sofa_score/build/build_news.dart';
-import 'package:sofa_score/build/build_score.dart';
-import 'package:sofa_score/models/data.dart';
-import 'package:sofa_score/models/fetch_news.dart';
+import '../build/build_favorite.dart';
+import '../build/build_news.dart';
+import '../build/build_score.dart';
+import '../models/data.dart';
+import '../models/fetch_news.dart';
 
 List<Widget> widgetOptions(
-    BuildContext context,
-    Function(void Function()) setState,
-    ScrollController scrollController,
-    Future<void> Function() logout) {
+  BuildContext context,
+  Function(void Function()) setState,
+  ScrollController scrollController,
+  Future<void> Function() logout,
+  VoidCallback navigateToProfile,
+) {
   return [
     // Menampilkan daftar pertandingan
     ListView.builder(
@@ -103,7 +105,7 @@ List<Widget> widgetOptions(
       builder: (context) {
         // Navigasi langsung ke halaman profil ketika tab profil dipilih
         Future.microtask(() {
-          Navigator.pushNamed(context, '/profil');
+          navigateToProfile();
         });
         return const Center(
           child:
