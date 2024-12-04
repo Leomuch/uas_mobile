@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../util/font.dart';
 
 Widget buildNewsCard(String jurnalis, String headline, String dateline,
-    String? imageUrl, String url) {
+    String? imageUrl, String url, {required BuildContext context}) {
   return GestureDetector(
     onTap: () async {
       final Uri uri = Uri.parse(url);
@@ -27,11 +27,11 @@ Widget buildNewsCard(String jurnalis, String headline, String dateline,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(jurnalis,
-                    style: styleKu2, overflow: TextOverflow.ellipsis),
+                    style: styleKu2(context), overflow: TextOverflow.ellipsis),
                 Text(headline,
-                    style: styleKu3, overflow: TextOverflow.ellipsis),
+                    style: styleKu3(context), overflow: TextOverflow.ellipsis),
                 Text(dateline,
-                    style: styleKu2, overflow: TextOverflow.ellipsis),
+                    style: styleKu2(context), overflow: TextOverflow.ellipsis),
               ],
             ),
             imageUrl != null && imageUrl.isNotEmpty

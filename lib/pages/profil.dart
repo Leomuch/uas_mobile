@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sofa_score/main.dart';
 
 class ProfilePage extends StatefulWidget {
   final Future<void> Function() logout;
@@ -11,6 +13,34 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemePreference();
+  }
+
+  Future<void> _loadThemePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
+  Future<void> _updateThemePreference(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', value);
+    setState(() {
+      isDarkMode = value;
+    });
+
+    final ThemeMode themeMode = value ? ThemeMode.dark : ThemeMode.light;
+    if (mounted) {
+      MyApp.of(context)?.setThemeMode(themeMode);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,14 +90,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ListTile(
                   leading: const Icon(Icons.person),
                   title: const Text('Akun'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProfilePage(logout: widget.logout)),
-                    );
-                  },
+                  onTap: () {},
+                ),
+                // Opsi Dark Mode
+                SwitchListTile(
+                  value: isDarkMode,
+                  title: const Text('Mode Gelap'),
+                  secondary: const Icon(Icons.dark_mode),
+                  onChanged: (value) => _updateThemePreference(value),
                 ),
                 ListTile(
                   leading: const Icon(Icons.home),
@@ -111,23 +141,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ElevatedButton(
             onPressed: () async {
               try {
-                // Pastikan widget masih terpasang sebelum melakukan logout
                 await widget.logout();
-
-                // Periksa jika widget masih terpasang
                 if (mounted) {
-                  // Menggunakan addPostFrameCallback untuk memastikan context aman
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    // Gunakan Navigator dengan rootNavigator: true untuk menavigasi ke halaman yang benar
                     Navigator.of(context, rootNavigator: true)
-                        .pushNamedAndRemoveUntil(
-                      '/landing',
-                      (route) => false, // Hapus semua route sebelumnya
-                    );
+                        .pushNamedAndRemoveUntil('/landing', (route) => false);
                   });
                 }
               } catch (e) {
-                // Menampilkan SnackBar hanya jika widget masih terpasang
                 if (mounted) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -27,11 +27,14 @@ class _HomePageState extends State<HomePage> {
       final index = matchData.indexWhere((match) => match['status'] == 'TIMED');
       if (index != -1) {
         final position = index * 70.0;
-        _scrollController.animateTo(
-          position,
-          duration: const Duration(seconds: 1),
-          curve: Curves.easeInOut,
-        );
+        // Pastikan _scrollController terhubung dengan ListView
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            position,
+            duration: const Duration(seconds: 1),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -44,12 +47,15 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadMatchData() async {
     List<Map<String, dynamic>> fetchedMatches = await fetchMatchData();
-    setState(() {
-      matchData = fetchedMatches;
-      isLoading = false;
-    });
-    // Panggil fungsi scroll setelah data dimuat
-    scrollToUpcomingMatch();
+    if (mounted) {
+      // Periksa apakah widget masih terpasang
+      setState(() {
+        matchData = fetchedMatches;
+        isLoading = false;
+      });
+      // Panggil fungsi scroll setelah data dimuat
+      scrollToUpcomingMatch();
+    }
   }
 
   void _onItemTapped(int index) {
@@ -91,8 +97,8 @@ class _HomePageState extends State<HomePage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : widgetOptions(
-              context, setState, _scrollController, logout, navigateToProfile)[_selectedIndex],
+          : widgetOptions(context, setState, _scrollController, logout,
+              navigateToProfile)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

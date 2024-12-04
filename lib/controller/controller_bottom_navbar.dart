@@ -66,7 +66,7 @@ List<Widget> widgetOptions(
                 news['title'] ?? 'No Title',
                 news['description'] ?? 'No Description',
                 news['imageUrl'],
-                news['url'],
+                news['url'], context: context,
               );
             },
           );

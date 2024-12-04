@@ -15,7 +15,11 @@ Widget buildFavoriteCard({
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Menampilkan judul (head)
-          Text(head, style: styleKu2),
+          Builder(
+            builder: (context) {
+              return Text(capitalizeFirst(head), style: styleKu2(context));
+            },
+          ),
           const SizedBox(height: 4),
           // Menampilkan avatar menggunakan Row untuk tampilan horizontal
           SingleChildScrollView(
@@ -99,7 +103,7 @@ Widget buildFavoriteCard({
                                                   : const AssetImage(
                                                           'assets/images/default.png')
                                                       as ImageProvider,
-                                              fit: BoxFit.cover,
+                                              fit: BoxFit.contain,
                                             ),
                                             borderRadius:
                                                 BorderRadius.circular(4),
@@ -107,8 +111,8 @@ Widget buildFavoriteCard({
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          teamName, // Menampilkan nama tim
-                                          style: styleKu4,
+                                          teamName,
+                                          style: styleKu4(context),
                                         ),
                                       ],
                                     ),
@@ -143,13 +147,19 @@ Widget buildFavoriteCard({
                                           width: 50,
                                           height: 50,
                                           decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.light
+                                                    ? const Color.fromARGB(
+                                                        255, 254, 247, 255)
+                                                    : Colors.white,
                                             image: DecorationImage(
                                               image: crestUrl.isNotEmpty
                                                   ? NetworkImage(crestUrl)
                                                   : const AssetImage(
                                                           'assets/images/default.png')
                                                       as ImageProvider,
-                                              fit: BoxFit.cover,
+                                              fit: BoxFit.contain,
                                             ),
                                             borderRadius:
                                                 BorderRadius.circular(4),
@@ -157,8 +167,8 @@ Widget buildFavoriteCard({
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          competitionName, // Menampilkan nama tim
-                                          style: styleKu4,
+                                          competitionName,
+                                          style: styleKu4(context),
                                         ),
                                       ],
                                     ),

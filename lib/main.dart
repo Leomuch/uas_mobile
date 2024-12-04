@@ -3,7 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:sofa_score/models/profil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sofa_score/pages/profil.dart';
 import 'package:sofa_score/pages/auth.dart';
 import 'package:sofa_score/pages/competition_page.dart';
 import 'package:sofa_score/pages/home_page.dart';
@@ -25,28 +26,51 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  static MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<MyAppState>();
+
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyApp> createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system; // Default: sistem perangkat
+
   @override
   void initState() {
     super.initState();
-    initializtion();
+    _initializeTheme();
+    _initializeSplashScreen();
   }
 
-  void initializtion() async {
+  /// Menginisialisasi tema dari preferensi pengguna
+  Future<void> _initializeTheme() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    setState(() {
+      _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  /// Fungsi untuk mengubah tema secara global
+  void setThemeMode(ThemeMode themeMode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', themeMode == ThemeMode.dark);
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
+  /// Menghapus splash screen setelah penundaan
+  void _initializeSplashScreen() async {
     if (kDebugMode) {
-      print('pausing...');
+      print('Splash Screen sedang berjalan...');
     }
     await Future.delayed(const Duration(seconds: 1));
-    if (kDebugMode) {
-      print('pausing');
-    }
     FlutterNativeSplash.remove();
   }
 
+  /// Fungsi untuk logout
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     if (mounted) {
@@ -61,7 +85,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode,
       theme: ThemeData.light().copyWith(
         primaryColor: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
@@ -74,7 +98,7 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData) {
             return const HomePage();
           } else {
