@@ -16,13 +16,23 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (kDebugMode) {
+        print("Home Team Lineup: ${data['homeTeam']['lineup']}");
+        print("Away Team Lineup: ${data['awayTeam']['lineup']}");
+      }
+
+      if (kDebugMode) {
         print(data);
-      } // Debugging untuk melihat isi respons
+      }
 
       final referee = data['referees']?.firstWhere(
         (ref) => ref['type'] == 'REFEREE',
         orElse: () => null,
       )?['name'];
+
+      // Mengambil lineup tim rumah
+      List<dynamic> homeLineup = data['homeTeam']['lineup'] ?? [];
+      // Mengambil lineup tim tandang
+      List<dynamic> awayLineup = data['awayTeam']['lineup'] ?? [];
 
       // Mengambil informasi umum pertandingan
       var matchInfo = {
@@ -46,21 +56,13 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
         'scoreHome': data['score']['fullTime']['home'] ?? 0,
         'scoreAway': data['score']['fullTime']['away'] ?? 0,
         'goals': data['goals'],
-        // 'goals': data['goals']?.map<Map<String, dynamic>>((goal) {
-        //       return {
-        //         'minute': goal['minute'],
-        //         'injuryTime': goal['injuryTime'],
-        //         'type': goal['type'],
-        //         'team': goal['team']['name'],
-        //         'scorer': goal['scorer']['name'],
-        //         'assist': goal['assist']?['name'],
-        //         'scoreHome': goal['score']['home'],
-        //         'scoreAway': goal['score']['away'],
-        //       };
-        //     }).toList() ??
-        //     [],
+        'homeLineup': homeLineup, // Menambahkan lineup tim rumah
+        'awayLineup': awayLineup, // Menambahkan lineup tim tandang
       };
 
+      if (kDebugMode) {
+        print(matchInfo);
+      }
       matchDetail.add(matchInfo);
 
       return matchDetail;

@@ -6,6 +6,7 @@ import '../build/build_news.dart';
 import '../build/build_score.dart';
 import '../models/data.dart';
 import '../models/fetch_news.dart';
+import '../util/group_matches_by_matchday.dart';
 
 List<Widget> widgetOptions(
   BuildContext context,
@@ -14,39 +15,59 @@ List<Widget> widgetOptions(
   Future<void> Function() logout,
   VoidCallback navigateToProfile,
 ) {
+  Map<int, List<Map<String, dynamic>>> groupedMatches =
+      groupMatchesByMatchday(matchData);
   return [
     // Menampilkan daftar pertandingan
     ListView.builder(
       controller: scrollController,
-      itemCount: matchData.length,
+      itemCount: groupedMatches.keys.length,
       itemBuilder: (context, index) {
-        final match = matchData[index];
-        return buildScoreCard(
-          context,
-          match['id'],
-          match['homeTeam'],
-          match['awayTeam'],
-          match['scoreA'],
-          match['scoreB'],
-          match['utcDate'],
-          match['status'],
-          match['homeCrest'],
-          match['awayCrest'],
-          (action) {
-            if (action == 'delete') {
-              setState(() {
-                matchData.removeAt(index);
-              });
-            } else if (action == 'mute') {
-              if (kDebugMode) {
-                print(
-                    'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
-              }
-            }
-          },
+        int matchDay = groupedMatches.keys.elementAt(index);
+        List<Map<String, dynamic>> matchesForDay = groupedMatches[matchDay]!;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Matchday $matchDay", // Menampilkan match day
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ...matchesForDay.map((match) {
+              return buildScoreCard(
+                context,
+                match['id'],
+                match['homeTeam'],
+                match['awayTeam'],
+                match['scoreA'],
+                match['scoreB'],
+                match['utcDate'],
+                match['status'],
+                match['homeCrest'],
+                match['awayCrest'],
+                (action) {
+                  if (action == 'delete') {
+                    setState(() {
+                      matchData.remove(match); // Menghapus pertandingan
+                    });
+                  } else if (action == 'mute') {
+                    if (kDebugMode) {
+                      print(
+                          'Pertandingan ${match['homeTeam']} vs ${match['awayTeam']} disenyapkan');
+                    }
+                  }
+                },
+              );
+            }),
+          ],
         );
       },
     ),
+
     // Menampilkan daftar berita sepak bola
     FutureBuilder<List<Map<String, dynamic>>>(
       future: fetchFootballNews(), // Mengambil data berita dari API
@@ -66,7 +87,8 @@ List<Widget> widgetOptions(
                 news['title'] ?? 'No Title',
                 news['description'] ?? 'No Description',
                 news['imageUrl'],
-                news['url'], context: context,
+                news['url'],
+                context: context,
               );
             },
           );
@@ -75,6 +97,8 @@ List<Widget> widgetOptions(
         }
       },
     ),
+
+    // Menampilkan daftar favorit
     StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('favorites').snapshots(),
       builder: (context, snapshot) {
@@ -100,10 +124,11 @@ List<Widget> widgetOptions(
         );
       },
     ),
+
     // Menampilkan loading indicator sementara navigasi ke halaman profil
     Builder(
       builder: (context) {
-        // Navigasi langsung ke halaman profil ketika tab profil dipilih
+        // Pastikan navigasi hanya dipanggil sekali
         Future.microtask(() {
           navigateToProfile();
         });

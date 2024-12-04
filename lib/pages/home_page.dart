@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sofa Score'),
+        title: const Text('Winning Score'),
         automaticallyImplyLeading: false,
       ),
       body: isLoading

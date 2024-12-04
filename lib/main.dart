@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,9 +62,6 @@ class MyAppState extends State<MyApp> {
 
   /// Menghapus splash screen setelah penundaan
   void _initializeSplashScreen() async {
-    if (kDebugMode) {
-      print('Splash Screen sedang berjalan...');
-    }
     await Future.delayed(const Duration(seconds: 1));
     FlutterNativeSplash.remove();
   }
