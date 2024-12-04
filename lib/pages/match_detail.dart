@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sofa_score/build/build_goal.dart';
 import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/models/fetch_match_detail.dart';
 import 'package:intl/intl.dart';
+
+import 'team.dart';
 
 class MatchDetailPage extends StatefulWidget {
   const MatchDetailPage({super.key});
@@ -79,19 +80,31 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Column(
-                            children: [
-                              Image.network(
-                                matchDetail[0]['homeCrest'],
-                                width: 50,
-                                height: 50,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                '${matchDetail[0]['homeTeam']}',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/team',
+                                arguments: {
+                                  'id': matchDetail[0]['idHome'],
+                                  'name': matchDetail[0]['homeTeamF'],
+                                },
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Image.network(
+                                  matchDetail[0]['homeCrest'],
+                                  width: 50,
+                                  height: 50,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${matchDetail[0]['homeTeam']}',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
                           ),
                           Text(
                             '${matchDetail[0]['scoreHome']} - ${matchDetail[0]['scoreAway']}',
@@ -100,19 +113,31 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Column(
-                            children: [
-                              Image.network(
-                                matchDetail[0]['awayCrest'],
-                                width: 50,
-                                height: 50,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                '${matchDetail[0]['awayTeam']}',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/team',
+                                arguments: {
+                                  'id': matchDetail[0]['idAway'],
+                                  'name': matchDetail[0]['awayTeamF'],
+                                },
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Image.network(
+                                  matchDetail[0]['awayCrest'],
+                                  width: 50,
+                                  height: 50,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${matchDetail[0]['awayTeam']}',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -120,7 +145,6 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                       Text('Status: ${matchDetail[0]['status']}'),
                       Text('Matchday: ${matchDetail[0]['matchday']}'),
                       Text('Wasit: ${matchDetail[0]['referee']}'),
-                      buildGoalsInfo(),
                     ],
                   ),
                 ),
@@ -128,7 +152,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   }
 }
 
-// Tambahkan fungsi untuk memformat tanggal
+// Fungsi untuk memformat tanggal
 String _formatDate(String utcDate) {
   DateTime dateTime = DateTime.parse(utcDate);
   return DateFormat('d MMMM yyyy').format(dateTime);

@@ -10,6 +10,7 @@ import 'package:sofa_score/pages/home_page.dart';
 import 'package:sofa_score/pages/landing_page.dart';
 import 'package:sofa_score/pages/league_standings.dart';
 import 'package:sofa_score/pages/match_detail.dart';
+import 'package:sofa_score/pages/team.dart';
 import 'package:sofa_score/pages/team_page.dart';
 import 'package:sofa_score/pages/top_score.dart';
 
@@ -110,6 +111,7 @@ class MyAppState extends State<MyApp> {
         '/match_detail': (context) => const MatchDetailPage(),
         '/league_standing': (context) => const LeagueStandings(),
         '/top_score': (context) => const TopScore(),
+        '/team': (context) => Team(),
         '/team_page': (context) => const TeamPage(),
         '/competition_page': (context) => const CompetitionPage(),
       },

@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sofa_score/models/fetch_league_standing.dart';
 import '../build/build_favorite.dart';
-import '../build/build_news.dart';
 import '../build/build_score.dart';
 import '../models/data.dart';
-import '../models/fetch_news.dart';
 import '../util/group_matches_by_matchday.dart';
 
 List<Widget> widgetOptions(
@@ -67,37 +66,77 @@ List<Widget> widgetOptions(
         );
       },
     ),
-
-    // Menampilkan daftar berita sepak bola
+    // Menampilkan daftar standings liga
     FutureBuilder<List<Map<String, dynamic>>>(
-      future: fetchFootballNews(), // Mengambil data berita dari API
+      future: fetchLeagueStandings(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          final newsData = snapshot.data!;
-          return ListView.builder(
-            itemCount: newsData.length,
-            itemBuilder: (context, index) {
-              final news = newsData[index];
-              return buildNewsCard(
-                news['source'] ?? 'Unknown Source',
-                news['title'] ?? 'No Title',
-                news['description'] ?? 'No Description',
-                news['imageUrl'],
-                news['url'],
-                context: context,
-              );
-            },
-          );
-        } else {
-          return const Center(child: Text('No news available.'));
         }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          final standingsData = snapshot.data!;
+          return SingleChildScrollView(
+            scrollDirection:
+                Axis.vertical, // Gulir vertikal untuk seluruh layar
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal, // Gulir horizontal untuk tabel
+              child: DataTable(
+                columnSpacing: 15,
+                columns: const [
+                  DataColumn(label: Text('Pos')),
+                  DataColumn(label: Text('Team')),
+                  DataColumn(label: Text('P')),
+                  DataColumn(label: Text('GK')),
+                  DataColumn(label: Text('+/-')),
+                  DataColumn(label: Text('PTS')),
+                  DataColumn(label: Text('M')),
+                  DataColumn(label: Text('S')),
+                  DataColumn(label: Text('K')),
+                ],
+                rows: standingsData.asMap().entries.map(
+                  (entry) {
+                    final index = entry.key + 1;
+                    final team = entry.value;
+                    return DataRow(
+                      cells: [
+                        DataCell(Text('$index')),
+                        DataCell(
+                          Row(
+                            children: [
+                              Image.network(
+                                team['crestUrl'],
+                                width: 20,
+                                height: 20,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.error, size: 20),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(team['teamName']),
+                            ],
+                          ),
+                        ),
+                        DataCell(Text('${team['playedGames']}')),
+                        DataCell(Text(
+                            '${team['goalsFor']}:${team['goalsAgainst']}')),
+                        DataCell(Text('${team['goalDifference']}')),
+                        DataCell(Text('${team['points']}')),
+                        DataCell(Text('${team['wins']}')),
+                        DataCell(Text('${team['draws']}')),
+                        DataCell(Text('${team['losses']}')),
+                      ],
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+          );
+        }
+        return const Center(child: Text('No standings data available.'));
       },
     ),
-
     // Menampilkan daftar favorit
     StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('favorites').snapshots(),

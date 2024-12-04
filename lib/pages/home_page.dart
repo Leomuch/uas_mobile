@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper_outlined),
-            label: 'News',
+            label: 'Standing',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star_border_outlined),

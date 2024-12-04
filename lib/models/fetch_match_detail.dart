@@ -16,11 +16,6 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (kDebugMode) {
-        print("Home Team Lineup: ${data['homeTeam']['lineup']}");
-        print("Away Team Lineup: ${data['awayTeam']['lineup']}");
-      }
-
-      if (kDebugMode) {
         print(data);
       }
 
@@ -29,35 +24,25 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
         orElse: () => null,
       )?['name'];
 
-      // Mengambil lineup tim rumah
-      List<dynamic> homeLineup = data['homeTeam']['lineup'] ?? [];
-      // Mengambil lineup tim tandang
-      List<dynamic> awayLineup = data['awayTeam']['lineup'] ?? [];
-
       // Mengambil informasi umum pertandingan
       var matchInfo = {
         'id': data['id'],
+        'idHome': data['homeTeam']['id'],
+        'idAway': data['awayTeam']['id'],
         'status': data['status'],
         'utcDate': data['utcDate'],
-        'minute': data['minute'] ?? 0,
-        'injuryTime': data['injuryTime'] ?? 0,
-        'venue': data['venue'],
         'matchday': data['matchday'] ?? 0,
         'area': data['area']['name'],
         'competition': data['competition']['name'],
         'homeTeam': data['homeTeam']['shortName'],
+        'homeTeamF': data['homeTeam']['name'],
         'awayTeam': data['awayTeam']['shortName'],
+        'awayTeamF': data['awayTeam']['name'],
         'homeCrest': data['homeTeam']['crest'],
         'awayCrest': data['awayTeam']['crest'],
-        'homeCoach': data['homeTeam']['coach']?['name'],
-        'awayCoach': data['awayTeam']['coach']?['name'],
-        'formationHome': data['homeTeam']['formation'],
         'referee': referee,
         'scoreHome': data['score']['fullTime']['home'] ?? 0,
         'scoreAway': data['score']['fullTime']['away'] ?? 0,
-        'goals': data['goals'],
-        'homeLineup': homeLineup, // Menambahkan lineup tim rumah
-        'awayLineup': awayLineup, // Menambahkan lineup tim tandang
       };
 
       if (kDebugMode) {
