@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sofa_score/models/fetch_favorite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sofa_score/models/fetch_teams.dart';
+import 'package:sofa_score/models/fetch_teams_page.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -17,7 +17,7 @@ class _TeamPageState extends State<TeamPage> {
   @override
   void initState() {
     super.initState();
-    teams = fetchTeams(); // Fetch teams from your API or database
+    teams = fetchTeamsPage(); // Fetch teams from your API or database
     favorites = fetchFavorites(); // Fetch favorites once on init
   }
 
@@ -60,13 +60,11 @@ class _TeamPageState extends State<TeamPage> {
               .collection('favorites')
               .doc(documentId)
               .update({
-            'teams': FieldValue.arrayRemove([
-              {
-                'teamName': team['teamName'],
-                'crestUrl': team['crestUrl'],
-                'area': team['area'],
-              }
-            ]),
+            'teams': FieldValue.arrayRemove([{
+              'teamName': team['teamName'],
+              'crestUrl': team['crestUrl'],
+              'area': team['area'],
+            }]),
           });
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -78,13 +76,11 @@ class _TeamPageState extends State<TeamPage> {
               .collection('favorites')
               .doc(documentId)
               .update({
-            'teams': FieldValue.arrayUnion([
-              {
-                'teamName': team['teamName'],
-                'crestUrl': team['crestUrl'],
-                'area': team['area'],
-              }
-            ]),
+            'teams': FieldValue.arrayUnion([{
+              'teamName': team['teamName'],
+              'crestUrl': team['crestUrl'],
+              'area': team['area'],
+            }]),
           });
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -121,10 +117,8 @@ class _TeamPageState extends State<TeamPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final teamsList = snapshot.data![0] as List<
-                Map<String, dynamic>>; // First element is the teams list
-            final favoriteTeams = snapshot.data![1] as List<
-                Map<String, dynamic>>; // Second element is the favorites list
+            final teamsList = snapshot.data![0] as List<Map<String, dynamic>>; // First element is the teams list
+            final favoriteTeams = snapshot.data![1] as List<Map<String, dynamic>>; // Second element is the favorites list
 
             return ListView.builder(
               itemCount: teamsList.length,
@@ -140,12 +134,10 @@ class _TeamPageState extends State<TeamPage> {
                           width: 40, // Ukuran kotak gambar
                           height: 40, // Ukuran kotak gambar
                           decoration: BoxDecoration(
-                            shape: BoxShape
-                                .rectangle, // Menjadikan gambar berbentuk kotak
+                            shape: BoxShape.rectangle, // Menjadikan gambar berbentuk kotak
                             image: DecorationImage(
                               image: NetworkImage(team['crestUrl'] ?? ''),
-                              fit: BoxFit
-                                  .cover, // Menyesuaikan gambar dengan ukuran kotak
+                              fit: BoxFit.cover, // Menyesuaikan gambar dengan ukuran kotak
                             ),
                           ),
                         )
@@ -161,6 +153,17 @@ class _TeamPageState extends State<TeamPage> {
                       addTeamToFavorites(team);
                     },
                   ),
+                  onTap: () {
+                    // Navigasi ke halaman Team dengan mengirimkan ID dan nama tim
+                    Navigator.pushNamed(
+                      context,
+                      '/team',
+                      arguments: {
+                        'id': team['id'],
+                        'name': team['teamName'],
+                      },
+                    );
+                  },
                 );
               },
             );

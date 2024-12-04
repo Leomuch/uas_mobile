@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:sofa_score/models/data.dart';
 
 Future<List<Map<String, dynamic>>> fetchMatchData() async {
-  const url = 'https://api.football-data.org/v4/competitions/PD/matches';
+  const url = 'https://api.football-data.org/v4/competitions/PL/matches';
   const headers = {
     'X-Auth-Token': '998b16130d4c49dd93253380d7284154',
   };
