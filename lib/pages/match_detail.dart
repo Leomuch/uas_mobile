@@ -88,6 +88,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                                 arguments: {
                                   'id': matchDetail[0]['idHome'],
                                   'name': matchDetail[0]['homeTeamF'],
+                                  'crest': matchDetail[0]['homeCrest'],
                                 },
                               );
                             },
@@ -121,6 +122,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                                 arguments: {
                                   'id': matchDetail[0]['idAway'],
                                   'name': matchDetail[0]['awayTeamF'],
+                                  'crest': matchDetail[0]['awayCrest'],
                                 },
                               );
                             },

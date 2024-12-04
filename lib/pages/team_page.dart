@@ -161,6 +161,7 @@ class _TeamPageState extends State<TeamPage> {
                       arguments: {
                         'id': team['id'],
                         'name': team['teamName'],
+                        'crest': team['crestUrl'],
                       },
                     );
                   },
