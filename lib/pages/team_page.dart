@@ -35,6 +35,7 @@ class _TeamPageState extends State<TeamPage> {
           'head': 'team',
           'teams': [
             {
+              'id': team['id'],
               'teamName': team['teamName'],
               'crestUrl': team['crestUrl'],
               'area': team['area'],
@@ -61,6 +62,7 @@ class _TeamPageState extends State<TeamPage> {
               .doc(documentId)
               .update({
             'teams': FieldValue.arrayRemove([{
+              'id': team['id'],
               'teamName': team['teamName'],
               'crestUrl': team['crestUrl'],
               'area': team['area'],
@@ -77,6 +79,7 @@ class _TeamPageState extends State<TeamPage> {
               .doc(documentId)
               .update({
             'teams': FieldValue.arrayUnion([{
+              'id': team['id'],
               'teamName': team['teamName'],
               'crestUrl': team['crestUrl'],
               'area': team['area'],

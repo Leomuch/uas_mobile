@@ -3,8 +3,6 @@ import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/models/fetch_match_detail.dart';
 import 'package:intl/intl.dart';
 
-import 'team.dart';
-
 class MatchDetailPage extends StatefulWidget {
   const MatchDetailPage({super.key});
 

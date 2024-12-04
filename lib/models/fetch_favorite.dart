@@ -24,8 +24,7 @@ Future<List<Map<String, dynamic>>> fetchFavorites() async {
     for (var doc in teamQuerySnapshot.docs) {
       if (doc['head'] == 'team') {
         final teams = doc['teams'] as List;
-        allFavorites.addAll(List<Map<String, dynamic>>.from(
-            teams)); // Menambahkan data tim favorit
+        allFavorites.addAll(List<Map<String, dynamic>>.from(teams));
       }
     }
 
@@ -33,8 +32,7 @@ Future<List<Map<String, dynamic>>> fetchFavorites() async {
     for (var doc in competitionQuerySnapshot.docs) {
       if (doc['head'] == 'competition') {
         final competitions = doc['competitions'] as List;
-        allFavorites.addAll(List<Map<String, dynamic>>.from(
-            competitions)); // Menambahkan data kompetisi favorit
+        allFavorites.addAll(List<Map<String, dynamic>>.from(competitions));
       }
     }
 
