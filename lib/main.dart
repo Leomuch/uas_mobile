@@ -61,6 +61,15 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system,
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.black,
+      ),
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

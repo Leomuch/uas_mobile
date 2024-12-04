@@ -51,13 +51,16 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                 'competition': competition,
               });
             },
-            child: Text(
-              '${matchDetail[0]['area']},  ${matchDetail[0]['competition']}, Ronde ${matchDetail[0]['matchday']}',
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-            ),
+            child: matchDetail.isNotEmpty
+                ? Text(
+                    '${matchDetail[0]['area']}, ${matchDetail[0]['competition']}, Ronde ${matchDetail[0]['matchday']}',
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  )
+                : const Text('Loading match details...'),
           ),
         ),
       ),
