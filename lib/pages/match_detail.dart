@@ -3,6 +3,8 @@ import 'package:sofa_score/models/data.dart';
 import 'package:sofa_score/models/fetch_match_detail.dart';
 import 'package:intl/intl.dart';
 
+import '../models/fetch_last_five.dart';
+
 class MatchDetailPage extends StatefulWidget {
   const MatchDetailPage({super.key});
 
@@ -12,6 +14,9 @@ class MatchDetailPage extends StatefulWidget {
 
 class _MatchDetailPageState extends State<MatchDetailPage> {
   bool isLoading = true;
+  late int idHome;
+  late int idAway;
+  List<Map<String, dynamic>> lastFiveMatches = [];
 
   @override
   void initState() {
@@ -21,10 +26,29 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   Future<void> loadMatchData(int matchId) async {
     List<Map<String, dynamic>> fetchedMatches =
         await fetchMatchDetails(matchId);
+    print(fetchedMatches);
     setState(() {
-      matchDetail = fetchedMatches; // Menyimpan data yang diambil
-      isLoading = false; // Mengubah status loading
+      matchDetail = fetchedMatches[0]['data'];
+      isLoading = false;
     });
+  }
+
+  void fetchMatches(int idHome, int idAway) async {
+    try {
+      var homeResults = await getLastFiveHomeMatchResults(idHome);
+      var awayResults = await getLastFiveAwayMatchResults(idAway);
+
+      setState(() {
+        // Menggabungkan hasil pertandingan home dan away ke dalam satu list
+        lastFiveMatches = [
+          {'label': 'Home Matches', 'matches': homeResults},
+          {'label': 'Away Matches', 'matches': awayResults},
+        ];
+        print('Last Five Matches: $lastFiveMatches');
+      });
+    } catch (error) {
+      print('Error fetching matches: $error');
+    }
   }
 
   @override
@@ -35,8 +59,14 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     final competition = arguments['competition'];
 
     if (matchId != null && isLoading) {
+      idHome = arguments['idHome']; // Mengambil idHome dari arguments
+      idAway = arguments['idAway']; // Mengambil idAway dari arguments
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        loadMatchData(matchId);
+        Future.delayed(const Duration(milliseconds: 100), () {
+          fetchMatches(idHome, idAway);
+          loadMatchData(matchId);
+        });
       });
     }
 
@@ -145,6 +175,24 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                       Text('Status: ${matchDetail[0]['status']}'),
                       Text('Matchday: ${matchDetail[0]['matchday']}'),
                       Text('Wasit: ${matchDetail[0]['referee']}'),
+                      const SizedBox(height: 20),
+                      // Menampilkan hasil pertandingan gabungan
+                      lastFiveMatches.isEmpty
+                          ? const Text('Loading last five matches...')
+                          : Column(
+                              children: lastFiveMatches.map((matchData) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(matchData['label']),
+                                    ...matchData['matches'].map((match) {
+                                      return Text(
+                                          'Home: ${match['homeTeam']} vs Away: ${match['awayTeam']} - Score: ${match['scoreA']} - ${match['scoreB']} Result: ${match['result']}');
+                                    }).toList(),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                     ],
                   ),
                 ),

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 Widget buildScoreCard(
   BuildContext context,
   int matchId,
+  int idHome,
+  int idAway,
   String homeTeam,
   String awayTeam,
   int scoreA,
@@ -22,7 +24,11 @@ Widget buildScoreCard(
       Navigator.pushNamed(
         context,
         '/match_detail',
-        arguments: {'id': matchId}, // Ambil ID dari data match
+        arguments: {
+          'id': matchId,
+          'idHome' : idHome,
+          'idAway' : idAway,
+          }, // Ambil ID dari data match
       );
     },
     child: Dismissible(

@@ -37,6 +37,7 @@ Future<List<Map<String, dynamic>>> fetchLeagueStandings() async {
           'crestUrl': team['team']['crest'],
         });
       }
+      print(leagueData);
 
       return leagueData;
     } else {

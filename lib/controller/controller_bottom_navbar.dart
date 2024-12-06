@@ -40,6 +40,8 @@ List<Widget> widgetOptions(
               return buildScoreCard(
                 context,
                 match['id'],
+                match['idHome'],
+                match['idAway'],
                 match['homeTeam'],
                 match['awayTeam'],
                 match['scoreA'],

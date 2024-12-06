@@ -21,6 +21,8 @@ Future<List<Map<String, dynamic>>> fetchMatchData() async {
       for (var match in fetchedMatches) {
         matchData.add({
           'id': match['id'],
+          'idHome': match['homeTeam']['id'],
+          'idAway': match['awayTeam']['id'],
           'homeTeam': match['homeTeam']['shortName'],
           'awayTeam': match['awayTeam']['shortName'],
           'scoreA': match['score']['fullTime']['home'] ?? 0,

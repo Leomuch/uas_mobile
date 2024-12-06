@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sofa_score/models/fetch_team.dart';
 
+import '../controller/controller_tab_team.dart';
+
 class Team extends StatefulWidget {
   const Team({super.key});
 
@@ -10,17 +12,19 @@ class Team extends StatefulWidget {
 
 class _TeamState extends State<Team> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _scrollController = ScrollController(); // Inisialisasi ScrollController
   }
 
   @override
   void dispose() {
-    // Jangan lupa untuk dispose TabController
     _tabController.dispose();
+    _scrollController.dispose(); // Jangan lupa dispose ScrollController
     super.dispose();
   }
 
@@ -45,8 +49,7 @@ class _TeamState extends State<Team> with SingleTickerProviderStateMixin {
               children: [
                 if (crest != null)
                   Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: Image.network(
                       crest,
                       width: 50,
@@ -74,58 +77,30 @@ class _TeamState extends State<Team> with SingleTickerProviderStateMixin {
           ),
         ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchTeam(idTeam),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final team = snapshot.data![0];
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Tab Pertandingan
+          teamWidgetOptions(
+            context,
+            setState,
+            _scrollController,
+          )[0], // Panggil Tab Pertandingan
 
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                // Tab Pertandingan
-                const Center(
-                    child: Text(
-                        'Pertandingan Tab - Here you can display matches.')),
+          // Tab Squad
+          teamWidgetOptions(
+            context,
+            setState,
+            _scrollController,
+          )[1], // Panggil Tab Squad
 
-                // Tab Squad
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Squad:'),
-                      if (team['squad'] != null)
-                        ...team['squad']
-                            .map<Widget>((player) => Text(player))
-                            .toList(),
-                    ],
-                  ),
-                ),
-
-                // Tab Deskripsi
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Name: ${team['name']}'),
-                      Text('Short Name: ${team['shortName']}'),
-                      Text('Area: ${team['area']}'),
-                      Text('Competitions: ${team['competitions']?.join(', ')}'),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        },
+          // Tab Deskripsi
+          teamWidgetOptions(
+            context,
+            setState,
+            _scrollController,
+          )[2], // Panggil Tab Deskripsi
+        ],
       ),
     );
   }

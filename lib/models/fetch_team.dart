@@ -15,6 +15,7 @@ Future<List<Map<String, dynamic>>> fetchTeam(int idTeam) async {
     final response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      if (kDebugMode) print('API Response: $data');
 
       // Mengambil informasi tim
       final teamInfo = {
@@ -26,8 +27,22 @@ Future<List<Map<String, dynamic>>> fetchTeam(int idTeam) async {
         'competitions': data['runningCompetitions']
             ?.map((competition) => competition['name'])
             .toList(),
-        'squad':
-            data['squad']?.map((player) => player['name'] as String).toList(),
+        'squad': (data['squad'] as List<dynamic>?)
+            ?.map((player) {
+              // Validasi tipe data untuk setiap pemain
+              if (player is Map<String, dynamic> &&
+                  player.containsKey('name')) {
+                return {
+                  'name': player['name'],
+                  'position': player['position'] ??
+                      'Unknown', // Default jika tidak ada posisi
+                };
+              }
+              return null; // Abaikan jika tidak valid
+            })
+            .where((player) => player != null) // Hapus null dari list
+            .cast<Map<String, dynamic>>()
+            .toList(),
       };
 
       if (kDebugMode) {

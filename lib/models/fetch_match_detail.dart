@@ -15,8 +15,11 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
     final response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
+      // Memformat data JSON menjadi lebih mudah dibaca (pretty-print)
+      final prettyJson = const JsonEncoder.withIndent('  ').convert(data);
       if (kDebugMode) {
-        print(data);
+        print(prettyJson); // Menampilkan data yang diformat
       }
 
       final referee = data['referees']?.firstWhere(
@@ -50,7 +53,7 @@ Future<List<Map<String, dynamic>>> fetchMatchDetails(int matchId) async {
       }
       matchDetail.add(matchInfo);
 
-      return matchDetail;
+      return [{'data': matchDetail}];
     } else {
       if (kDebugMode) {
         print('Failed to load matches: ${response.statusCode}');
