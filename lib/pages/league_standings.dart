@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sofa_score/models/data.dart';
-import 'package:sofa_score/models/fetch_league_standing.dart';
+import '../models/data.dart';
+import '../models/fetch_league_standing.dart';
 
 class LeagueStandings extends StatefulWidget {
   const LeagueStandings({super.key});

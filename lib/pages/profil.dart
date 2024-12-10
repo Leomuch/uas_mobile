@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sofa_score/main.dart';
+import '../main.dart';
 
 class ProfilePage extends StatefulWidget {
   final Future<void> Function() logout;

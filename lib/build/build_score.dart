@@ -10,6 +10,7 @@ Widget buildScoreCard(
   String awayTeam,
   int scoreA,
   int scoreB,
+  int matchday,
   String utcDate,
   String status,
   String homeCrest,
@@ -28,6 +29,7 @@ Widget buildScoreCard(
           'id': matchId,
           'idHome' : idHome,
           'idAway' : idAway,
+          'matchday' : matchday,
           }, // Ambil ID dari data match
       );
     },

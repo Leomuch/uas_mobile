@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sofa_score/models/fetch_favorite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sofa_score/models/fetch_teams_page.dart';
+import '../models/fetch_teams_page.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});

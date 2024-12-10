@@ -2,11 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'fetch_match_team.dart';
 
 // Fungsi untuk memparsing hasil pertandingan dan mengambil 5 pertandingan home terakhir
-List<Map<String, dynamic>> parseLastFiveHomeMatches(List<Map<String, dynamic>> matches, int teamId) {
+List<Map<String, dynamic>> parseLastFiveHomeMatches(List<Map<String, dynamic>> matches, int teamId, int matchday) {
   List<Map<String, dynamic>> lastFiveHomeMatches = [];
 
+  final filteredMatches = matches
+      .where((match) =>
+          match['matchday'] != null && match['matchday'] < matchday)
+      .toList();
+
+  filteredMatches.sort((a, b) => b['matchday'].compareTo(a['matchday']));
+
   // Ambil 5 pertandingan terakhir yang sesuai dengan tim dan home (tim sebagai tuan rumah)
-  for (var match in matches.take(5)) {
+  for (var match in filteredMatches.take(5)) {
     if (match['idHome'] == teamId || match['idAway'] == teamId) {
       var result = '';
 
@@ -48,11 +55,18 @@ List<Map<String, dynamic>> parseLastFiveHomeMatches(List<Map<String, dynamic>> m
 }
 
 // Fungsi untuk memparsing hasil pertandingan dan mengambil 5 pertandingan away terakhir
-List<Map<String, dynamic>> parseLastFiveAwayMatches(List<Map<String, dynamic>> matches, int teamId) {
+List<Map<String, dynamic>> parseLastFiveAwayMatches(List<Map<String, dynamic>> matches, int teamId, int matchday) {
   List<Map<String, dynamic>> lastFiveAwayMatches = [];
 
+    final filteredMatches = matches
+      .where((match) =>
+          match['matchday'] != null && match['matchday'] < matchday)
+      .toList();
+
+  filteredMatches.sort((a, b) => b['matchday'].compareTo(a['matchday']));
+
   // Ambil 5 pertandingan terakhir yang sesuai dengan tim dan away (tim sebagai tamu)
-  for (var match in matches.take(5)) {
+  for (var match in filteredMatches.take(5)) {
     if (match['idAway'] == teamId || match['idHome'] == teamId) {
       var result = '';
 
@@ -94,13 +108,13 @@ List<Map<String, dynamic>> parseLastFiveAwayMatches(List<Map<String, dynamic>> m
 }
 
 // Fungsi untuk mengambil dan memparsing data dari fetchMatchesForTeam untuk home matches
-Future<List<Map<String, dynamic>>> getLastFiveHomeMatchResults(int teamId) async {
+Future<List<Map<String, dynamic>>> getLastFiveHomeMatchResults(int teamId, int matchday) async {
   try {
     // Ambil data pertandingan untuk tim dengan ID yang diberikan
     var matches = await fetchMatchesForTeam(teamId);
 
     // Parsing dan ambil 5 pertandingan home terakhir
-    return parseLastFiveHomeMatches(matches, teamId);
+    return parseLastFiveHomeMatches(matches, teamId, matchday);
   } catch (e) {
     if (kDebugMode) {
       print('Error parsing home matches: $e');
@@ -110,13 +124,13 @@ Future<List<Map<String, dynamic>>> getLastFiveHomeMatchResults(int teamId) async
 }
 
 // Fungsi untuk mengambil dan memparsing data dari fetchMatchesForTeam untuk away matches
-Future<List<Map<String, dynamic>>> getLastFiveAwayMatchResults(int teamId) async {
+Future<List<Map<String, dynamic>>> getLastFiveAwayMatchResults(int teamId, int matchday) async {
   try {
     // Ambil data pertandingan untuk tim dengan ID yang diberikan
     var matches = await fetchMatchesForTeam(teamId);
 
     // Parsing dan ambil 5 pertandingan away terakhir
-    return parseLastFiveAwayMatches(matches, teamId);
+    return parseLastFiveAwayMatches(matches, teamId, matchday);
   } catch (e) {
     if (kDebugMode) {
       print('Error parsing away matches: $e');

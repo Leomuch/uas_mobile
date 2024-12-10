@@ -16,6 +16,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   bool isLoading = true;
   late int idHome;
   late int idAway;
+  late int matchday;
   List<Map<String, dynamic>> lastFiveMatches = [];
 
   @override
@@ -35,8 +36,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   void fetchMatches(int idHome, int idAway) async {
     try {
-      var homeResults = await getLastFiveHomeMatchResults(idHome);
-      var awayResults = await getLastFiveAwayMatchResults(idAway);
+      var homeResults = await getLastFiveHomeMatchResults(idHome, matchday);
+      var awayResults = await getLastFiveAwayMatchResults(idAway, matchday);
 
       setState(() {
         // Menggabungkan hasil pertandingan home dan away ke dalam satu list
@@ -61,6 +62,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     if (matchId != null && isLoading) {
       idHome = arguments['idHome']; // Mengambil idHome dari arguments
       idAway = arguments['idAway']; // Mengambil idAway dari arguments
+      matchday = arguments['matchday']; // Mengambil idAway dari arguments
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(milliseconds: 100), () {
@@ -174,9 +176,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                       const SizedBox(height: 20),
                       Text('Status: ${matchDetail[0]['status']}'),
                       Text('Matchday: ${matchDetail[0]['matchday']}'),
-                      Text('Wasit: ${matchDetail[0]['referee']}'),
+                      Text('Wasit: ${matchDetail[0]['referee'] ?? 'Wasit belum ditentukan'}'),
                       const SizedBox(height: 20),
-                      // Menampilkan hasil pertandingan gabungan
                       lastFiveMatches.isEmpty
                           ? const Text('Loading last five matches...')
                           : Column(

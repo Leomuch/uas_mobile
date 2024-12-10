@@ -46,6 +46,7 @@ List<Widget> widgetOptions(
                 match['awayTeam'],
                 match['scoreA'],
                 match['scoreB'],
+                match['matchday'],
                 match['utcDate'],
                 match['status'],
                 match['homeCrest'],

@@ -3,16 +3,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sofa_score/pages/profil.dart';
-import 'package:sofa_score/pages/auth.dart';
-import 'package:sofa_score/pages/competition_page.dart';
-import 'package:sofa_score/pages/home_page.dart';
-import 'package:sofa_score/pages/landing_page.dart';
-import 'package:sofa_score/pages/league_standings.dart';
-import 'package:sofa_score/pages/match_detail.dart';
-import 'package:sofa_score/pages/team.dart';
-import 'package:sofa_score/pages/team_page.dart';
-import 'package:sofa_score/pages/top_score.dart';
+import 'pages/profil.dart';
+import 'pages/auth.dart';
+import 'pages/competition_page.dart';
+import 'pages/home_page.dart';
+import 'pages/landing_page.dart';
+import 'pages/league_standings.dart';
+import 'pages/match_detail.dart';
+import 'pages/team.dart';
+import 'pages/team_page.dart';
+import 'pages/top_score.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

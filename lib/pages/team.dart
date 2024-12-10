@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sofa_score/models/fetch_team.dart';
+// import 'package:sofa_score/models/fetch_team.dart';
 
 import '../controller/controller_tab_team.dart';
 
@@ -33,7 +33,7 @@ class _TeamState extends State<Team> with SingleTickerProviderStateMixin {
     // Mengambil idTeam dan teamName dari arguments route
     final arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    final idTeam = arguments['id'];
+    // final idTeam = arguments['id'];
     final teamName = arguments['name'];
     final crest = arguments['crest'];
 
