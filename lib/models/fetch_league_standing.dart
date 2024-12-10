@@ -24,6 +24,7 @@ Future<List<Map<String, dynamic>>> fetchLeagueStandings() async {
       for (var team in standing) {
         leagueData.add({
           'position': team['position'],
+          'idTeam': team['team']['id'],
           'teamName': team['team']['shortName'] ?? team['team']['name'],
           'points': team['points'],
           'playedGames': team['playedGames'],

@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sofa_score/models/data.dart';
+import 'package:sofa_score/models/fetch_league_standing.dart';
 import 'package:sofa_score/models/fetch_match_detail.dart';
 import 'package:intl/intl.dart';
 
@@ -14,14 +17,115 @@ class MatchDetailPage extends StatefulWidget {
 
 class _MatchDetailPageState extends State<MatchDetailPage> {
   bool isLoading = true;
+  bool isPredictionLoading = false;
   late int idHome;
   late int idAway;
   late int matchday;
   List<Map<String, dynamic>> lastFiveMatches = [];
+  List<Map<String, dynamic>> lastResult = [];
+  String? predictionResult;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> sendDataForPrediction(int homeTeamId, int awayTeamId) async {
+    const apiUrl = 'https://condatest.loca.lt/api/predict';
+    const headers = {'Content-Type': 'application/json'};
+
+    await fetchLeagueStandings();
+
+    final homeTeamData = leagueData.firstWhere(
+      (team) => team['idTeam'] == idHome,
+      orElse: () => {},
+    );
+
+    final awayTeamData = leagueData.firstWhere(
+      (team) => team['idTeam'] == idAway,
+      orElse: () => {},
+    );
+
+    final homeTeamGD = homeTeamData['goalDifference'];
+    final awayTeamGD = awayTeamData['goalDifference'];
+    final homeTeamPoint = homeTeamData['points'];
+    final awayTeamPoint = awayTeamData['points'];
+    final difFromPTS = homeTeamPoint - awayTeamPoint;
+    List<String> lastThreeHomeResults = [];
+    List<String> lastThreeAwayResults = [];
+
+    if (lastResult.isNotEmpty) {
+      lastThreeHomeResults =
+          lastResult[0]['matches'].take(3).map<String>((match) {
+        var result = match['result'];
+        if (result is String) {
+          return result;
+        } else {
+          return ''; // return empty string if it's not a string
+        }
+      }).toList();
+
+      lastThreeAwayResults =
+          lastResult[1]['matches'].take(3).map<String>((match) {
+        var result = match['result'];
+        if (result is String) {
+          return result;
+        } else {
+          return '';
+        }
+      }).toList();
+    }
+
+    // Data yang akan dikirim ke API prediksi
+    final Map<String, dynamic> inputData = {
+      "data": [
+        homeTeamGD,
+        awayTeamGD,
+        homeTeamPoint,
+        awayTeamPoint,
+        difFromPTS,
+        ...lastThreeHomeResults,
+        ...lastThreeAwayResults,
+      ]
+    };
+    print('Input data: $inputData');
+
+    try {
+      setState(() {
+        isPredictionLoading = true;
+      });
+
+      // Kirim POST request
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonEncode(inputData),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        // Cek respons API
+        print('Response data: $responseData');
+
+        setState(() {
+          predictionResult =
+              'Home Win: ${responseData['prediction'][0][0].toStringAsFixed(2)}%, Away Win: ${responseData['prediction'][0][1].toStringAsFixed(2)}%';
+        });
+      } else {
+        setState(() {
+          predictionResult = 'Failed to fetch prediction';
+        });
+      }
+    } catch (error) {
+      setState(() {
+        predictionResult = 'Error: $error';
+      });
+    } finally {
+      setState(() {
+        isPredictionLoading = false;
+      });
+    }
   }
 
   Future<void> loadMatchData(int matchId) async {
@@ -38,6 +142,17 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     try {
       var homeResults = await getLastFiveHomeMatchResults(idHome, matchday);
       var awayResults = await getLastFiveAwayMatchResults(idAway, matchday);
+      List<Map<String, dynamic>> getResults(
+          List<Map<String, dynamic>> results) {
+        return results.map((match) {
+          return {
+            'result': match['result'],
+          };
+        }).toList();
+      }
+
+      List<Map<String, dynamic>> homeResultsOnly = getResults(homeResults);
+      List<Map<String, dynamic>> awayResultsOnly = getResults(awayResults);
 
       setState(() {
         // Menggabungkan hasil pertandingan home dan away ke dalam satu list
@@ -45,8 +160,14 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
           {'label': 'Home Matches', 'matches': homeResults},
           {'label': 'Away Matches', 'matches': awayResults},
         ];
+        lastResult = [
+          {'label': 'Home Matches', 'matches': homeResultsOnly},
+          {'label': 'Away Matches', 'matches': awayResultsOnly},
+        ];
         print('Last Five Matches: $lastFiveMatches');
+        print('Last Three Matches: $lastResult');
       });
+      sendDataForPrediction(idHome, idAway);
     } catch (error) {
       print('Error fetching matches: $error');
     }
@@ -68,6 +189,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         Future.delayed(const Duration(milliseconds: 100), () {
           fetchMatches(idHome, idAway);
           loadMatchData(matchId);
+          // sendDataForPrediction(idHome, idAway);
         });
       });
     }
@@ -176,7 +298,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                       const SizedBox(height: 20),
                       Text('Status: ${matchDetail[0]['status']}'),
                       Text('Matchday: ${matchDetail[0]['matchday']}'),
-                      Text('Wasit: ${matchDetail[0]['referee'] ?? 'Wasit belum ditentukan'}'),
+                      Text(
+                          'Wasit: ${matchDetail[0]['referee'] ?? 'Wasit belum ditentukan'}'),
                       const SizedBox(height: 20),
                       lastFiveMatches.isEmpty
                           ? const Text('Loading last five matches...')
@@ -194,6 +317,12 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                                 );
                               }).toList(),
                             ),
+                      if (isPredictionLoading)
+                        const CircularProgressIndicator(),
+                      if (predictionResult != null) ...[
+                        const SizedBox(height: 20),
+                        Text('Prediction: $predictionResult'),
+                      ],
                     ],
                   ),
                 ),

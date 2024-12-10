@@ -17,24 +17,24 @@ List<Map<String, dynamic>> parseLastFiveHomeMatches(List<Map<String, dynamic>> m
     if (match['idHome'] == teamId || match['idAway'] == teamId) {
       var result = '';
 
-      // Tentukan hasil pertandingan (Win, Lose, Draw)
+      // Tentukan hasil pertandingan (W, L, D)
       if (match['idHome'] == teamId) {
         // Tim sebagai tuan rumah
         if (match['scoreA'] > match['scoreB']) {
-          result = 'Win';
+          result = 'W';
         } else if (match['scoreA'] < match['scoreB']) {
-          result = 'Lose';
+          result = 'L';
         } else {
-          result = 'Draw';
+          result = 'D';
         }
       } else if (match['idAway'] == teamId) {
         // Tim sebagai tamu
         if (match['scoreB'] > match['scoreA']) {
-          result = 'Win';
+          result = 'W';
         } else if (match['scoreB'] < match['scoreA']) {
-          result = 'Lose';
+          result = 'L';
         } else {
-          result = 'Draw';
+          result = 'D';
         }
       }
 
@@ -70,24 +70,24 @@ List<Map<String, dynamic>> parseLastFiveAwayMatches(List<Map<String, dynamic>> m
     if (match['idAway'] == teamId || match['idHome'] == teamId) {
       var result = '';
 
-      // Tentukan hasil pertandingan (Win, Lose, Draw)
+      // Tentukan hasil pertandingan (W, L, D)
       if (match['idAway'] == teamId) {
         // Tim sebagai tuan rumah
         if (match['scoreB'] > match['scoreA']) {
-          result = 'Win';
+          result = 'W';
         } else if (match['scoreB'] < match['scoreA']) {
-          result = 'Lose';
+          result = 'L';
         } else {
-          result = 'Draw';
+          result = 'D';
         }
       } else if (match['idHome'] == teamId) {
         // Tim sebagai tamu
         if (match['scoreA'] > match['scoreB']) {
-          result = 'Win';
+          result = 'W';
         } else if (match['scoreA'] < match['scoreB']) {
-          result = 'Lose';
+          result = 'L';
         } else {
-          result = 'Draw';
+          result = 'D';
         }
       }
 
